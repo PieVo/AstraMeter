@@ -505,6 +505,8 @@ void CT002Component::apply_override_(Consumer &consumer) {
   consumer.distribution_weight = ov.distribution_weight;
   consumer.efficiency_window_weight = ov.efficiency_window_weight;
   consumer.min_dc_output = ov.min_dc_output;
+  consumer.auto_target_min = ov.auto_target_min;
+  consumer.auto_target_max = ov.auto_target_max;
 }
 
 void CT002Component::snapshot_override_(const Consumer &consumer) {
@@ -517,6 +519,8 @@ void CT002Component::snapshot_override_(const Consumer &consumer) {
   ov.distribution_weight = consumer.distribution_weight;
   ov.efficiency_window_weight = consumer.efficiency_window_weight;
   ov.min_dc_output = consumer.min_dc_output;
+  ov.auto_target_min = consumer.auto_target_min;
+  ov.auto_target_max = consumer.auto_target_max;
 }
 
 void CT002Component::update_consumer_report_(const std::string &consumer_id,
@@ -581,6 +585,8 @@ ReportMap CT002Component::collect_reports_for_balancer_() const {
       r.weight = kv.second.distribution_weight;
       r.efficiency_window_weight = kv.second.efficiency_window_weight;
       r.min_dc_output = kv.second.min_dc_output;
+      r.auto_target_min = kv.second.auto_target_min;
+      r.auto_target_max = kv.second.auto_target_max;
       out[kv.first] = std::move(r);
     }
   }
@@ -849,6 +855,8 @@ CT002Component::ConsumerSnapshot CT002Component::snapshot_consumer(
   snap.distribution_weight = c.distribution_weight;
   snap.efficiency_window_weight = c.efficiency_window_weight;
   snap.min_dc_output = c.min_dc_output;
+  snap.auto_target_min = c.auto_target_min;
+  snap.auto_target_max = c.auto_target_max;
   snap.poll_interval = c.poll_interval;
   snap.answer_interval = c.answer_interval;
   snap.timestamp = c.timestamp;
@@ -961,6 +969,22 @@ void CT002Component::set_consumer_min_dc_output(const std::string &consumer_id,
   if (!std::isfinite(value) || value < 0.0f) return;
   auto &consumer = this->get_consumer_(consumer_id);
   consumer.min_dc_output = value;
+  this->snapshot_override_(consumer);
+}
+
+void CT002Component::set_consumer_auto_target_min(const std::string &consumer_id, float value) {
+  if (!std::isfinite(value) || value < -10000.0f || value > 10000.0f) return;
+  auto &consumer = this->get_consumer_(consumer_id);
+  if (value > consumer.auto_target_max) return;
+  consumer.auto_target_min = value;
+  this->snapshot_override_(consumer);
+}
+
+void CT002Component::set_consumer_auto_target_max(const std::string &consumer_id, float value) {
+  if (!std::isfinite(value) || value < -10000.0f || value > 10000.0f) return;
+  auto &consumer = this->get_consumer_(consumer_id);
+  if (value < consumer.auto_target_min) return;
+  consumer.auto_target_max = value;
   this->snapshot_override_(consumer);
 }
 

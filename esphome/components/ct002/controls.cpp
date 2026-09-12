@@ -162,6 +162,8 @@ constexpr Range NUMERIC_FIELDS[] = {
     {"distribution_weight", 0.0f, 10.0f, 1.0f},
     {"efficiency_window_weight", 0.0f, 100.0f, 0.01f},
     {"min_dc_output", 0.0f, 1000.0f, 1.0f},
+    {"auto_target_min", -10000.0f, 10000.0f, 1.0f},
+    {"auto_target_max", -10000.0f, 10000.0f, 1.0f},
 };
 
 // Mirrors the switch entries of CONSUMER_CONTROLS.

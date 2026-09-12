@@ -32,6 +32,8 @@ class ControllableDevice(Protocol):
         self, consumer_id: str, weight: float
     ) -> None: ...
     def set_consumer_min_dc_output(self, consumer_id: str, value: float) -> None: ...
+    def set_consumer_auto_target_min(self, consumer_id: str, value: float) -> None: ...
+    def set_consumer_auto_target_max(self, consumer_id: str, value: float) -> None: ...
     def set_active_control(self, active: bool) -> None: ...
     def force_efficiency_rotation(self) -> None: ...
 
@@ -116,6 +118,12 @@ CONSUMER_CONTROLS: tuple[ConsumerControl, ...] = (
         wire_scale=0.01,
     ),
     ConsumerControl("min_dc_output", "set_consumer_min_dc_output", 0.0, 1000.0),
+    ConsumerControl(
+        "auto_target_min", "set_consumer_auto_target_min", -10000.0, 10000.0
+    ),
+    ConsumerControl(
+        "auto_target_max", "set_consumer_auto_target_max", -10000.0, 10000.0
+    ),
 )
 
 CONSUMER_CONTROLS_BY_FIELD: dict[str, ConsumerControl] = {

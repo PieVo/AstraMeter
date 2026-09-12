@@ -114,6 +114,8 @@ struct Consumer {
   // Per-device MIN_DC_OUTPUT override (W); unset = inherit global. Tuned live
   // via the MQTT "Min DC Output" entity; mirrors Python's Consumer.min_dc_output.
   std::optional<float> min_dc_output;
+  float auto_target_min{-10000.0f};
+  float auto_target_max{10000.0f};
   // Net AC power the balancer last instructed this consumer to be at —
   // distinct from `power` (what the consumer reports). Under active control
   // the A/B/C cross-talk *_chrg_power / *_dchrg_power fields aggregate THIS,
@@ -135,6 +137,8 @@ struct ConsumerOverride {
   float distribution_weight{1.0f};
   float efficiency_window_weight{1.0f};
   std::optional<float> min_dc_output;
+  float auto_target_min{-10000.0f};
+  float auto_target_max{10000.0f};
 };
 
 class CT002Component : public Component {
@@ -254,6 +258,8 @@ class CT002Component : public Component {
     float distribution_weight{1.0f};
     float efficiency_window_weight{1.0f};
     std::optional<float> min_dc_output;
+    float auto_target_min{-10000.0f};
+    float auto_target_max{10000.0f};
     std::optional<float> poll_interval;
     std::optional<float> answer_interval;
     double timestamp{0.0};
@@ -328,6 +334,8 @@ class CT002Component : public Component {
   void set_consumer_distribution_weight(const std::string &consumer_id, float weight);
   void set_consumer_efficiency_window_weight(const std::string &consumer_id, float weight);
   void set_consumer_min_dc_output(const std::string &consumer_id, float value);
+  void set_consumer_auto_target_min(const std::string &consumer_id, float value);
+  void set_consumer_auto_target_max(const std::string &consumer_id, float value);
   void force_balancer_rotation();
 
   // True when efficiency rotation is enabled (min_efficient_power > 0). Mirrors

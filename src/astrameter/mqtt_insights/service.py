@@ -653,6 +653,8 @@ class MqttInsightsService:
             "distribution_weight": data.get("distribution_weight", 1.0),
             "efficiency_window_weight": data.get("efficiency_window_weight", 1.0),
             "min_dc_output": data.get("min_dc_output"),
+            "auto_target_min": data.get("auto_target_min", -10000),
+            "auto_target_max": data.get("auto_target_max", 10000),
         }
 
         await _publish_json(client, state_topic, consumer_state)

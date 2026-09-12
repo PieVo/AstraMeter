@@ -205,6 +205,10 @@ bool apply_consumer_control(CT002Component *ct002, const std::string &consumer_i
     ct002->set_consumer_efficiency_window_weight(consumer_id, value.number);
   } else if (field == "min_dc_output") {
     ct002->set_consumer_min_dc_output(consumer_id, value.number);
+  } else if (field == "auto_target_min") {
+    ct002->set_consumer_auto_target_min(consumer_id, value.number);
+  } else if (field == "auto_target_max") {
+    ct002->set_consumer_auto_target_max(consumer_id, value.number);
   } else {
     return false;
   }

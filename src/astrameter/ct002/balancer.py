@@ -75,6 +75,9 @@ class ConsumerReport:
     min_dc_output: float | None = None
     """Per-device MIN_DC_OUTPUT override in watts; ``None`` uses the global rule."""
 
+    auto_target_min: float = -10000.0
+    auto_target_max: float = 10000.0
+
     def __post_init__(self) -> None:
         floor = self.min_dc_output
         for field, value in (
@@ -87,6 +90,8 @@ class ConsumerReport:
                 max(0.0, min(1.0, float(self.efficiency_window_weight))),
             ),
             ("min_dc_output", None if floor is None else max(0.0, float(floor))),
+            ("auto_target_min", float(self.auto_target_min)),
+            ("auto_target_max", float(self.auto_target_max)),
         ):
             object.__setattr__(self, field, value)
 
@@ -1485,6 +1490,7 @@ class LoadBalancer:
 
         result = self._compute_auto_target(consumer_id, reports, grid_total, sample_id)
         result = self._apply_min_dc_output(consumer_id, reports, result)
+        result = self._apply_auto_target_range(consumer_id, reports, result)
         self._log_steer(consumer_id, consumer_mode, reports, grid_total, result)
         return result
 
@@ -1766,6 +1772,24 @@ class LoadBalancer:
             consumer_id,
             NetOutputW(eff_min),
             reported,
+            reports,
+            single_phase=report.phase,
+        )
+
+    def _apply_auto_target_range(
+        self, consumer_id: str | None, reports: Reports, result: list[float]
+    ) -> list[float]:
+        if not consumer_id or consumer_id not in reports:
+            return result
+        report = reports[consumer_id]
+        target = report.power + sum(result)
+        clamped = min(report.auto_target_max, max(report.auto_target_min, target))
+        if clamped == target:
+            return result
+        return self._emit(
+            consumer_id,
+            NetOutputW(clamped),
+            report.power,
             reports,
             single_phase=report.phase,
         )

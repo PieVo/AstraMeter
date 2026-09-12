@@ -359,6 +359,19 @@ def build_ct002_consumer_discovery(
     # Auto target: on = automatic control, off = manual override.
     components["auto_target"] = switch("auto_target", "Auto Target", category="config")
 
+    for field, label in (
+        ("auto_target_min", "Auto Target Min"),
+        ("auto_target_max", "Auto Target Max"),
+    ):
+        components[field] = number(
+            field,
+            label,
+            unit="W",
+            device_class="power",
+            mode="box",
+            template=f"{{{{ value_json.{field} | default({'-10000' if field.endswith('_min') else '10000'}) }}}}",
+        )
+
     # No ``entity_category`` on purpose: Active is this consumer's primary
     # control, not a setting tucked into the device's configuration section.
     components["active"] = switch("active", "Active")

@@ -209,7 +209,27 @@ def test_no_override_leaves_fresh_consumer_at_defaults() -> None:
     assert consumer.manual_target == 0.0
     assert consumer.active is True
     assert consumer.distribution_weight == 1.0
+    assert consumer.auto_target_min == -10000.0
+    assert consumer.auto_target_max == 10000.0
     assert "c1" not in ct._consumer_overrides
+
+
+def test_auto_target_range_survives_consumer_eviction() -> None:
+    """The auto-target bounds are saved per battery and survive eviction."""
+    clock = FakeClock()
+    ct = CT002(consumer_ttl=10, clock=clock)
+
+    ct.set_consumer_auto_target_min("c1", -250.0)
+    ct.set_consumer_auto_target_max("c1", 400.0)
+
+    clock.now = 5.0
+    _mark_reported(ct, "c1", clock.now)
+    clock.now += 11.0
+    ct._cleanup_consumers()
+
+    revived = ct._get_consumer("c1")
+    assert revived.auto_target_min == -250.0
+    assert revived.auto_target_max == 400.0
 
 
 # ---------------------------------------------------------------------------

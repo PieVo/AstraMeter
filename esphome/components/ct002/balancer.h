@@ -368,6 +368,8 @@ struct ConsumerReport {
   // Mirrors the Python reports dict's "min_dc_output" key. Default-initialized
   // so aggregate ``ConsumerReport{...}`` init stays warning-clean.
   std::optional<float> min_dc_output{};
+  float auto_target_min{-10000.0f};
+  float auto_target_max{10000.0f};
 };
 
 using ReportMap = std::unordered_map<std::string, ConsumerReport>;
@@ -580,6 +582,9 @@ class LoadBalancer {
   std::array<float, 3> apply_min_dc_output_(const std::optional<std::string> &consumer_id,
                                             const ReportMap &reports,
                                             std::array<float, 3> result);
+  std::array<float, 3> apply_auto_target_range_(
+      const std::optional<std::string> &consumer_id, const ReportMap &reports,
+      std::array<float, 3> result);
 
   std::array<float, 3> steer_to_zero_(const std::optional<std::string> &consumer_id,
                                       const ReportMap &reports, bool paced = false);

@@ -904,9 +904,26 @@ std::array<float, 3> LoadBalancer::compute_target(
   }
   auto result =
       this->compute_auto_target_(consumer_id, auto_reports, grid_total, sample_id);
-  const auto paced = this->apply_min_dc_output_(consumer_id, auto_reports, result);
-  this->log_steer_(consumer_id, mode, auto_reports, grid_total, paced);
-  return paced;
+  result = this->apply_min_dc_output_(consumer_id, auto_reports, result);
+  result = this->apply_auto_target_range_(consumer_id, auto_reports, result);
+  this->log_steer_(consumer_id, mode, auto_reports, grid_total, result);
+  return result;
+}
+
+std::array<float, 3> LoadBalancer::apply_auto_target_range_(
+    const std::optional<std::string> &consumer_id, const ReportMap &reports,
+    std::array<float, 3> result) {
+  if (!consumer_id.has_value()) return result;
+  auto it = reports.find(*consumer_id);
+  if (it == reports.end()) return result;
+  const ConsumerReport &report = it->second;
+  const float target = report.power + result[0] + result[1] + result[2];
+  const float clamped = std::min(report.auto_target_max,
+                                 std::max(report.auto_target_min, target));
+  if (clamped == target) return result;
+  const std::string phase = report.phase;
+  return this->emit_(consumer_id, NetOutputW{clamped}, report.power, reports,
+                     nullptr, false, &phase);
 }
 
 // -------------------------------------------------------------------------

@@ -276,6 +276,8 @@ class Consumer:
     min_dc_output: float | None = None
     # Last UDP source address seen for this consumer, if the protocol provides it.
     last_ip: str = ""
+    auto_target_min: float = -10000.0
+    auto_target_max: float = 10000.0
 
 
 @dataclasses.dataclass(slots=True)
@@ -297,6 +299,8 @@ class ConsumerOverride:
     distribution_weight: float = 1.0
     efficiency_window_weight: float = 1.0
     min_dc_output: float | None = None
+    auto_target_min: float = -10000.0
+    auto_target_max: float = 10000.0
 
 
 # Lowercase phase label carried on reporting rows: the three physical phases,
@@ -566,6 +570,8 @@ class CT002:
         consumer.distribution_weight = override.distribution_weight
         consumer.efficiency_window_weight = override.efficiency_window_weight
         consumer.min_dc_output = override.min_dc_output
+        consumer.auto_target_min = override.auto_target_min
+        consumer.auto_target_max = override.auto_target_max
 
     def _snapshot_override(self, consumer: Consumer) -> None:
         """Record a consumer's current control state so it survives eviction.
@@ -580,6 +586,8 @@ class CT002:
             distribution_weight=consumer.distribution_weight,
             efficiency_window_weight=consumer.efficiency_window_weight,
             min_dc_output=consumer.min_dc_output,
+            auto_target_min=consumer.auto_target_min,
+            auto_target_max=consumer.auto_target_max,
         )
 
     def set_consumer_value(self, consumer_id: str, values: list[float]) -> None:
@@ -645,6 +653,30 @@ class CT002:
             raise ValueError(msg)
         consumer = self._get_consumer(consumer_id)
         consumer.min_dc_output = v
+        self._snapshot_override(consumer)
+
+    def set_consumer_auto_target_min(self, consumer_id: str, value: float) -> None:
+        v = float(value)
+        if not math.isfinite(v) or v < -10000.0 or v > 10000.0:
+            raise ValueError(
+                f"auto_target_min must be between -10000 and 10000, got {value!r}"
+            )
+        consumer = self._get_consumer(consumer_id)
+        if v > consumer.auto_target_max:
+            raise ValueError("auto_target_min must not exceed auto_target_max")
+        consumer.auto_target_min = v
+        self._snapshot_override(consumer)
+
+    def set_consumer_auto_target_max(self, consumer_id: str, value: float) -> None:
+        v = float(value)
+        if not math.isfinite(v) or v < -10000.0 or v > 10000.0:
+            raise ValueError(
+                f"auto_target_max must be between -10000 and 10000, got {value!r}"
+            )
+        consumer = self._get_consumer(consumer_id)
+        if v < consumer.auto_target_min:
+            raise ValueError("auto_target_max must not be below auto_target_min")
+        consumer.auto_target_max = v
         self._snapshot_override(consumer)
 
     def set_consumer_auto_target(self, consumer_id: str, auto: bool) -> None:
@@ -831,6 +863,8 @@ class CT002:
                 weight=c.distribution_weight,
                 efficiency_window_weight=c.efficiency_window_weight,
                 min_dc_output=c.min_dc_output,
+                auto_target_min=c.auto_target_min,
+                auto_target_max=c.auto_target_max,
             )
             for cid, c in self._consumers.items()
             if c.timestamp > 0
@@ -1561,6 +1595,8 @@ class CT002:
                 consumer.efficiency_window_weight if consumer else 1.0
             ),
             "min_dc_output": consumer.min_dc_output if consumer else None,
+            "auto_target_min": consumer.auto_target_min if consumer else -10000.0,
+            "auto_target_max": consumer.auto_target_max if consumer else 10000.0,
             "active_control": self.active_control,
             "efficiency_rotation": self._balancer.efficiency_rotation_enabled,
             "consumer_count": sum(

@@ -254,6 +254,8 @@ void MqttInsightsComponent::publish_consumer_event_(const std::string &consumer_
     } else {
       root["min_dc_output"] = nullptr;
     }
+    root["auto_target_min"] = snap.auto_target_min;
+    root["auto_target_max"] = snap.auto_target_max;
   });
   this->mqtt_->publish(state_topic, state_buf, 0, true);
   this->mqtt_->publish(state_topic + "/availability", "online", 6, 0, true);
@@ -457,6 +459,18 @@ void MqttInsightsComponent::handle_consumer_field_command_(const std::string &co
       this->ct002_->set_consumer_min_dc_output(consumer_id, v);
     } else {
       ESP_LOGW(TAG, "Out-of-range min_dc_output for %s: %.1f", consumer_id.c_str(), v);
+    }
+  } else if (field == "auto_target_min" || field == "auto_target_max") {
+    float v;
+    if (!parse_float_payload(payload, v)) {
+      ESP_LOGW(TAG, "Invalid %s value for %s: %s", field.c_str(), consumer_id.c_str(), payload.c_str());
+    } else if (std::isfinite(v) && v >= -10000.0f && v <= 10000.0f) {
+      if (field == "auto_target_min")
+        this->ct002_->set_consumer_auto_target_min(consumer_id, v);
+      else
+        this->ct002_->set_consumer_auto_target_max(consumer_id, v);
+    } else {
+      ESP_LOGW(TAG, "Out-of-range %s for %s: %.1f", field.c_str(), consumer_id.c_str(), v);
     }
   }
 }

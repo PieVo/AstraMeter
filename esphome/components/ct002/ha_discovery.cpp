@@ -265,6 +265,26 @@ std::pair<std::string, std::string> build_ct002_consumer_discovery(
     at["retain"] = true;
     at["entity_category"] = "config";
 
+    for (const char *field : {"auto_target_min", "auto_target_max"}) {
+      JsonObject range = components[field].to<JsonObject>();
+      range["platform"] = "number";
+      range["unique_id"] = uid_prefix + "_" + field;
+      range["name"] = std::string(field) == "auto_target_min" ? "Auto Target Min" : "Auto Target Max";
+      range["unit_of_measurement"] = "W";
+      range["device_class"] = "power";
+      range["min"] = -10000;
+      range["max"] = 10000;
+      range["mode"] = "box";
+      range["state_topic"] = state_topic;
+      range["value_template"] = std::string("{{ value_json.") + field +
+                   (std::string(field) == "auto_target_min"
+                    ? " | default(-10000) }}"
+                    : " | default(10000) }}");
+      range["command_topic"] = state_topic + "/" + field + "/set";
+      range["retain"] = true;
+      range["entity_category"] = "config";
+    }
+
     // Active switch
     JsonObject act = components["active"].to<JsonObject>();
     act["platform"] = "switch";

@@ -171,6 +171,22 @@ def test_ct002_consumer_discovery_structure() -> None:
     assert auto["state_off"] == "False"
     assert auto["entity_category"] == "config"
 
+    auto_min = comps["auto_target_min"]
+    assert auto_min["platform"] == "number"
+    assert auto_min["command_topic"].endswith("/auto_target_min/set")
+    assert auto_min["retain"] is True
+    assert auto_min["min"] == -10000
+    assert auto_min["max"] == 10000
+    assert auto_min["entity_category"] == "config"
+
+    auto_max = comps["auto_target_max"]
+    assert auto_max["platform"] == "number"
+    assert auto_max["command_topic"].endswith("/auto_target_max/set")
+    assert auto_max["retain"] is True
+    assert auto_max["min"] == -10000
+    assert auto_max["max"] == 10000
+    assert auto_max["entity_category"] == "config"
+
     # Distribution weight number entity
     weight = comps["distribution_weight"]
     assert weight["platform"] == "number"
