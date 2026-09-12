@@ -106,6 +106,12 @@ def parse_bool(payload: str) -> bool | None:
 CONSUMER_CONTROLS: tuple[ConsumerControl, ...] = (
     ConsumerControl("active", "set_consumer_active"),
     ConsumerControl("auto_target", "set_consumer_auto_target"),
+    ConsumerControl(
+        "auto_target_min", "set_consumer_auto_target_min", -10000.0, 10000.0
+    ),
+    ConsumerControl(
+        "auto_target_max", "set_consumer_auto_target_max", -10000.0, 10000.0
+    ),
     ConsumerControl("manual_target", "set_consumer_manual_target", -10000.0, 10000.0),
     ConsumerControl(
         "distribution_weight", "set_consumer_distribution_weight", 0.0, 10.0
@@ -118,12 +124,6 @@ CONSUMER_CONTROLS: tuple[ConsumerControl, ...] = (
         wire_scale=0.01,
     ),
     ConsumerControl("min_dc_output", "set_consumer_min_dc_output", 0.0, 1000.0),
-    ConsumerControl(
-        "auto_target_min", "set_consumer_auto_target_min", -10000.0, 10000.0
-    ),
-    ConsumerControl(
-        "auto_target_max", "set_consumer_auto_target_max", -10000.0, 10000.0
-    ),
 )
 
 CONSUMER_CONTROLS_BY_FIELD: dict[str, ConsumerControl] = {

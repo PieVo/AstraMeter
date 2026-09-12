@@ -72,11 +72,14 @@ class ConsumerReport:
     :meth:`LoadBalancer._rotate_priority_head`). ``0.0`` parks the battery, by
     way of :meth:`LoadBalancer._sync_pool` sinking it to the tail."""
 
+    auto_target_min: float = -10000.0
+    """Lower bound for the auto-target path, in W."""
+
+    auto_target_max: float = 10000.0
+    """Upper bound for the auto-target path, in W."""
+
     min_dc_output: float | None = None
     """Per-device MIN_DC_OUTPUT override in watts; ``None`` uses the global rule."""
-
-    auto_target_min: float = -10000.0
-    auto_target_max: float = 10000.0
 
     def __post_init__(self) -> None:
         floor = self.min_dc_output

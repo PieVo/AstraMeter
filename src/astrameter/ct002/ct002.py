@@ -259,6 +259,8 @@ class Consumer:
     # Control state (set by explicit API calls)
     manual_target: float = 0.0
     manual_enabled: bool = False
+    auto_target_min: float = -10000.0
+    auto_target_max: float = 10000.0
     active: bool = True
     # Relative weight for fair-share distribution across batteries.  1.0 is
     # neutral; a battery with weight 2.0 takes roughly twice the share of a
@@ -276,8 +278,6 @@ class Consumer:
     min_dc_output: float | None = None
     # Last UDP source address seen for this consumer, if the protocol provides it.
     last_ip: str = ""
-    auto_target_min: float = -10000.0
-    auto_target_max: float = 10000.0
 
 
 @dataclasses.dataclass(slots=True)
@@ -295,12 +295,12 @@ class ConsumerOverride:
 
     manual_target: float = 0.0
     manual_enabled: bool = False
+    auto_target_min: float = -10000.0
+    auto_target_max: float = 10000.0
     active: bool = True
     distribution_weight: float = 1.0
     efficiency_window_weight: float = 1.0
     min_dc_output: float | None = None
-    auto_target_min: float = -10000.0
-    auto_target_max: float = 10000.0
 
 
 # Lowercase phase label carried on reporting rows: the three physical phases,
@@ -388,6 +388,8 @@ class ConsumerSnapshot:
     active: bool
     manual_enabled: bool
     manual_target: float
+    auto_target_min: float
+    auto_target_max: float
     distribution_weight: float
     efficiency_window_weight: float
     min_dc_output: float | None
@@ -566,12 +568,12 @@ class CT002:
             return
         consumer.manual_target = override.manual_target
         consumer.manual_enabled = override.manual_enabled
+        consumer.auto_target_min = override.auto_target_min
+        consumer.auto_target_max = override.auto_target_max
         consumer.active = override.active
         consumer.distribution_weight = override.distribution_weight
         consumer.efficiency_window_weight = override.efficiency_window_weight
         consumer.min_dc_output = override.min_dc_output
-        consumer.auto_target_min = override.auto_target_min
-        consumer.auto_target_max = override.auto_target_max
 
     def _snapshot_override(self, consumer: Consumer) -> None:
         """Record a consumer's current control state so it survives eviction.
@@ -978,6 +980,8 @@ class CT002:
             active=consumer.active,
             manual_enabled=consumer.manual_enabled,
             manual_target=consumer.manual_target,
+            auto_target_min=consumer.auto_target_min,
+            auto_target_max=consumer.auto_target_max,
             distribution_weight=consumer.distribution_weight,
             efficiency_window_weight=consumer.efficiency_window_weight,
             min_dc_output=consumer.min_dc_output,
@@ -1590,6 +1594,8 @@ class CT002:
             "smooth_target": self._last_smooth_target,
             "manual_target": consumer.manual_target if consumer else None,
             "auto_target": not consumer.manual_enabled if consumer else True,
+            "auto_target_min": consumer.auto_target_min if consumer else -10000.0,
+            "auto_target_max": consumer.auto_target_max if consumer else 10000.0,
             "distribution_weight": consumer.distribution_weight if consumer else 1.0,
             "efficiency_window_weight": (
                 consumer.efficiency_window_weight if consumer else 1.0

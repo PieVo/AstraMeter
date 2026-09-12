@@ -1383,6 +1383,12 @@ class _FakeDevice:
     def set_consumer_min_dc_output(self, cid: str, v: float) -> None:
         self._record("min_dc_output", cid, v)
 
+    def set_consumer_auto_target_min(self, cid: str, v: float) -> None:
+        self._record("auto_target_min", cid, v)
+
+    def set_consumer_auto_target_max(self, cid: str, v: float) -> None:
+        self._record("auto_target_max", cid, v)
+
     def set_active_control(self, v: bool) -> None:
         self._record("active_control", v)
 
