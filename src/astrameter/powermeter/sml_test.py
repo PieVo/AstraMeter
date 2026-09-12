@@ -391,8 +391,7 @@ def test_parse_sml_powers_returns_none_on_garbage() -> None:
 
 async def test_e2e_pty_serial_read() -> None:
     """Full E2E test: PTY pair → async serial read → SML parse → power values."""
-    openpty = os.openpty
-    master_fd, slave_fd = openpty()
+    master_fd, slave_fd = os.openpty()
     slave_name = os.ttyname(slave_fd)
 
     frame_data = _build_sml_frame(

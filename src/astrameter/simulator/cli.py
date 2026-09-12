@@ -119,19 +119,14 @@ def cmd_start(args: argparse.Namespace) -> None:
         except OSError:
             PID_FILE.unlink(missing_ok=True)
 
-    fork = getattr(os, "fork", None)
-    setsid = getattr(os, "setsid", None)
-    if fork is None or setsid is None:
-        raise RuntimeError("The simulator daemon mode requires a POSIX platform.")
-
-    pid = fork()
+    pid = os.fork()
     if pid > 0:
         PID_FILE.write_text(str(pid))
         print(f"Daemon started (PID {pid})")
         return
 
     # Child -- redirect output, run headless
-    setsid()
+    os.setsid()
     with open(LOG_FILE, "a") as log_fd:
         os.dup2(log_fd.fileno(), sys.stdout.fileno())
         os.dup2(log_fd.fileno(), sys.stderr.fileno())
