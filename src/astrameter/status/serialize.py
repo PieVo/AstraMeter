@@ -162,6 +162,8 @@ def consumer_to_wire(consumer: ConsumerSnapshot) -> dict[str, Any]:
             "active": consumer.active,
             "manual_enabled": consumer.manual_enabled,
             "manual_target_w": round_or_none(consumer.manual_target),
+            "auto_target_min_w": round_or_none(consumer.auto_target_min),
+            "auto_target_max_w": round_or_none(consumer.auto_target_max),
             "distribution_weight": round_or_none(consumer.distribution_weight, 3),
             # As a percentage, matching the "Efficiency Window Weight" MQTT
             # entity's unit — the dashboard and the user's HA entity list must
@@ -345,6 +347,8 @@ def ct002_to_wire(device: CT002Snapshot) -> dict[str, Any]:
                         "consumer_id": cid,
                         "manual_target_w": round_or_none(override.manual_target),
                         "manual_enabled": override.manual_enabled,
+                        "auto_target_min_w": round_or_none(override.auto_target_min),
+                        "auto_target_max_w": round_or_none(override.auto_target_max),
                         "active": override.active,
                         "distribution_weight": round_or_none(
                             override.distribution_weight, 3

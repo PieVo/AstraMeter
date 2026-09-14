@@ -1135,6 +1135,8 @@ const controllable: StatusSnapshot = {
           ...snapshot.devices![0].consumers![0],
           manual_enabled: true,
           manual_target_w: -250,
+          auto_target_min_w: -500,
+          auto_target_max_w: 750,
           distribution_weight: 1.5,
           efficiency_window_weight_pct: 60,
           min_dc_output_w: 80,
@@ -1147,6 +1149,8 @@ const controllable: StatusSnapshot = {
 const ctrlState: AppState = { ...live, tab: "batteries", snapshot: controllable };
 const ctrlHtml = renderToString(h("div", null, ...view(ctrlState, actions, initialConfigState())));
 has(ctrlHtml, 'aria-label="Manual target"', "manual target is offered");
+has(ctrlHtml, 'aria-label="Auto target minimum"', "auto target minimum is offered");
+has(ctrlHtml, 'aria-label="Auto target maximum"', "auto target maximum is offered");
 has(ctrlHtml, 'aria-label="Distribution weight"', "distribution weight is offered");
 has(ctrlHtml, 'aria-label="Efficiency window"', "efficiency window is offered");
 has(ctrlHtml, 'aria-label="Min DC output"', "min DC output is offered");
@@ -1157,6 +1161,7 @@ has(ctrlHtml, "Automatic target", "the auto/manual switch is offered");
 has(ctrlHtml, 'min="0" max="10" step="0.1"', "distribution weight keeps the MQTT range");
 has(ctrlHtml, 'min="0" max="100" step="5"', "efficiency window keeps the MQTT range");
 has(ctrlHtml, 'min="0" max="1000" step="1"', "min DC output keeps the MQTT range");
+has(ctrlHtml, 'min="-10000" max="10000" step="10"', "auto target bounds keep the MQTT range");
 has(ctrlHtml, "60%", "the slider shows its value");
 
 // Conditional visibility must match when the MQTT entity is published.

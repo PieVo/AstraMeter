@@ -88,6 +88,8 @@ export interface ConsumerStatus {
   active?: boolean;
   manual_enabled?: boolean;
   manual_target_w?: number;
+  auto_target_min_w?: number;
+  auto_target_max_w?: number;
   distribution_weight?: number;
   efficiency_window_weight_pct?: number; // 0..100, same unit as the MQTT entity
   min_dc_output_w?: number;
