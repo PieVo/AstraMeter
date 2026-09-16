@@ -223,6 +223,8 @@ void write_consumer(JsonWriter &json, const ConsumerStatus &consumer) {
   json.set("active", consumer.active);
   json.set("manual_enabled", consumer.manual_enabled);
   json.set("manual_target_w", static_cast<double>(consumer.manual_target_w), 1);
+  json.set("auto_target_min_w", static_cast<double>(consumer.auto_target_min_w), 1);
+  json.set("auto_target_max_w", static_cast<double>(consumer.auto_target_max_w), 1);
   json.set("distribution_weight", static_cast<double>(consumer.distribution_weight), 3);
   json.set("efficiency_window_weight_pct",
            static_cast<double>(consumer.efficiency_window_weight_pct), 1);

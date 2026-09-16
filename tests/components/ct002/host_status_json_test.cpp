@@ -98,6 +98,8 @@ StatusDocument sample() {
   consumer.last_seen_age_s = 2.0f;
   consumer.poll_interval_s = 1.0f;
   consumer.ttl_s = 5.0f;
+  consumer.auto_target_min_w = -500.0f;
+  consumer.auto_target_max_w = 750.0f;
   BalancerConsumerSnapshot state;
   state.last_target = 295.0f;
   state.saturation = 0.125;
@@ -252,6 +254,8 @@ TEST(StatusJson, CarriesTheBattery) {
   EXPECT_TRUE(contains(json, "\"last_target_w\":295"));
   EXPECT_TRUE(contains(json, "\"saturation\":0.125"));
   // The page reads this as a percentage, like the MQTT entity of the same name.
+  EXPECT_TRUE(contains(json, "\"auto_target_min_w\":-500"));
+  EXPECT_TRUE(contains(json, "\"auto_target_max_w\":750"));
   EXPECT_TRUE(contains(json, "\"efficiency_window_weight_pct\":100"));
 }
 

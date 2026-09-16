@@ -124,6 +124,8 @@ struct ConsumerStatus {
   bool active{true};
   bool manual_enabled{false};
   float manual_target_w{0.0f};
+  float auto_target_min_w{-10000.0f};
+  float auto_target_max_w{10000.0f};
   float distribution_weight{1.0f};
   /// As a percentage, matching the "Efficiency Window Weight" MQTT entity —
   /// the dashboard and the user's HA entity list must agree on the unit.

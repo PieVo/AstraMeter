@@ -146,6 +146,8 @@ const snapshot: StatusSnapshot = {
           reported_power_w: -320,
           last_seen_age_s: 0.4,
           active: true,
+          auto_target_min_w: -500,
+          auto_target_max_w: 750,
           balancer: { saturation: 0.12, last_target_w: -330 },
         },
         {

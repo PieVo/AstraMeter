@@ -54,6 +54,8 @@ def test_document_carries_the_live_battery(esphome: Backend) -> None:
     assert consumer["phase"] == "A"
     assert consumer["bucket"] == "A"
     assert consumer["mode"] == "auto"
+    assert consumer["auto_target_min_w"] == -10000
+    assert consumer["auto_target_max_w"] == 10000
     # Read off the balancer, not defaulted: the battery was told to discharge
     # into the 300 W import.
     assert consumer["balancer"]["last_target_w"] > 0
@@ -157,6 +159,14 @@ def test_efficiency_window_weight_round_trips_as_a_percentage(esphome: Backend) 
     assert _consumer(esphome)["efficiency_window_weight_pct"] == 50
 
 
+def test_auto_target_range_write_lands_in_the_document(esphome: Backend) -> None:
+    assert esphome.control("auto_target_min", -500, CONSUMER_ID).startswith("ok")
+    assert esphome.control("auto_target_max", 750, CONSUMER_ID).startswith("ok")
+    consumer = _consumer(esphome)
+    assert consumer["auto_target_min_w"] == -500
+    assert consumer["auto_target_max_w"] == 750
+
+
 def test_a_device_wide_write_lands_too(esphome: Backend) -> None:
     assert esphome.control("active_control", "false").startswith("ok")
     assert _device(esphome)["control"]["active_control"] is False
@@ -169,6 +179,8 @@ def test_a_device_wide_write_lands_too(esphome: Backend) -> None:
         ("distribution_weight", "-1"),
         ("efficiency_window_weight", "101"),
         ("min_dc_output", "5000"),
+        ("auto_target_min", "-10001"),
+        ("auto_target_max", "10001"),
     ],
 )
 def test_out_of_range_is_refused_with_python_s_own_message(

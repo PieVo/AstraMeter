@@ -120,6 +120,8 @@ status::DeviceStatus CT002Component::status_snapshot(double wall_now) const {
     row.active = consumer->active;
     row.manual_enabled = consumer->manual_enabled;
     row.manual_target_w = consumer->manual_target;
+    row.auto_target_min_w = consumer->auto_target_min;
+    row.auto_target_max_w = consumer->auto_target_max;
     row.mode = (!consumer->active || !consumer->participates) ? "inactive"
                : consumer->manual_enabled                     ? "manual"
                                                               : "auto";

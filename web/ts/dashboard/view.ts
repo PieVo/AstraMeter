@@ -739,7 +739,6 @@ function consumerControls(
       busy: busy("auto_target_min"),
       onCommit: (v) => set("auto_target_min", v),
     }),
-
     numberControl({
       label: "Auto target maximum",
       unit: "W",
