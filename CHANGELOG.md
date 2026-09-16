@@ -1,6 +1,7 @@
 # Changelog
 
 ## Next
+- **Added** a configurable auto-target range such that a user can modify minimum/maximum that the auto target mechanism stays within. This allows integration with other systems that require a "discharge lock" or simply reduce the maximum (dis)charge rate to extend battery life. ([#643]https://github.com/tomquist/AstraMeter/discussions/643).
 
 - **Fixed** a battery being driven to full charge or discharge against the house for up to a minute after it ran its phase detection, on setups using the optional Hampel outlier filter ([#652](https://github.com/tomquist/astrameter/issues/652), [#653](https://github.com/tomquist/astrameter/pull/653)).
 
