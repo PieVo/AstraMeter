@@ -1601,8 +1601,6 @@ class CT002:
                 consumer.efficiency_window_weight if consumer else 1.0
             ),
             "min_dc_output": consumer.min_dc_output if consumer else None,
-            "auto_target_min": consumer.auto_target_min if consumer else -10000.0,
-            "auto_target_max": consumer.auto_target_max if consumer else 10000.0,
             "active_control": self.active_control,
             "efficiency_rotation": self._balancer.efficiency_rotation_enabled,
             "consumer_count": sum(
