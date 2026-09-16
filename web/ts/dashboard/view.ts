@@ -729,26 +729,30 @@ function consumerControls(
       h("span", null, "Automatic target"),
     ),
 
-    numberControl({
-      label: "Auto target minimum",
-      unit: "W",
-      value: pend("auto_target_min", consumer.auto_target_min_w ?? -10000),
-      min: -10000,
-      max: 10000,
-      step: 10,
-      busy: busy("auto_target_min"),
-      onCommit: (v) => set("auto_target_min", v),
-    }),
-    numberControl({
-      label: "Auto target maximum",
-      unit: "W",
-      value: pend("auto_target_max", consumer.auto_target_max_w ?? 10000),
-      min: -10000,
-      max: 10000,
-      step: 10,
-      busy: busy("auto_target_max"),
-      onCommit: (v) => set("auto_target_max", v),
-    }),
+    h(
+      "div",
+      { class: "auto-target-range" },
+      numberControl({
+        label: "Auto target minimum",
+        unit: "W",
+        value: pend("auto_target_min", consumer.auto_target_min_w ?? -10000),
+        min: -10000,
+        max: 10000,
+        step: 10,
+        busy: busy("auto_target_min"),
+        onCommit: (v) => set("auto_target_min", v),
+      }),
+      numberControl({
+        label: "Auto target maximum",
+        unit: "W",
+        value: pend("auto_target_max", consumer.auto_target_max_w ?? 10000),
+        min: -10000,
+        max: 10000,
+        step: 10,
+        busy: busy("auto_target_max"),
+        onCommit: (v) => set("auto_target_max", v),
+      }),
+    ),
 
     manual
       ? numberControl({
